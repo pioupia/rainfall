@@ -129,34 +129,15 @@ Bon, offset de `/bin/sh` dans `objdump -s /lib/i386-linux-gnu/libc-2.15.so` = `0
 (gdb) x/10xw system
 0xb7e6b060 <system>:	0x891cec83
 ```
+
 donc on a l'adresse de `system` et de `/bin/sh`, testons:
 ```py
 print("A" * 4095 + "\n")
 print("A" * 9 + "\x60\xb0\xe6\xb7" + "\x90" * 4 + "\x58\xcc\xf8\xb7" + "A" * 4074 + "\x0a")
-print("0\x58\xcc\xf8\xb7\x58\xcc\xf8\xb7\x60\xb0\xe6\xb7" + "\x58\xcc\xf8\xb7" * 1019)
+# print("0\x58\xcc\xf8\xb7\x58\xcc\xf8\xb7\x60\xb0\xe6\xb7" + "\x58\xcc\xf8\xb7" * 1019)
 ```
 
-Marche pas. La commande `dmesg` nous renvoie les logs du crash du process:
-`bonus0[3552]: segfault at b7f8ccd0 ip b7f8cc5f sp bffff774 error 7 in libc-2.15.so[b7e2c000+1a3000]`
-
-Pour le debug, notons quelques return addresses :
-- `0x080485b9` (`pp` dans le main)
-- `0x08048539` (`p` dans `pp`)
-- `0x0804854c` (`p` dans `pp`)
-
-Le bug se situe lors du `ret` dans main.
-Adresse de base de retour de main est : `0xb7e454d3`. On peut analyser la return adresse pour savoir ce qui se passe :
-1. Dans le main, elle est au top la stack
-2. Après l'instruction `and    esp,0xfffffff0`, on a perdu 12 octets sur le pointeur `esp`.
-3. On retire à `esp` 64 octets, on se retrouve donc avec un espace de 76 octets avant d'écraser l'adresse du main.
-4. On va déclarer notre buffer à `esp + 22`, ce qui nous rapproche à 44 octets de notre adresse.
-5. En arrivant dans `pp`, on insère les adresses de retour, et on pointe sur `0xbffff6e0`, soit désormais 92 octets avant l'adresses de retour
-6. 
-
-
-Wait, après avoir cherché avec `dmesg`, j'ai vu qu'il essayé d'exécuter les adresses que je lui passais (comme de s opcode), et non d'exécuter la fonction `system`. Ce qui explique les segfault à répétitions.
-
-Après avoir testé avec `gdb`, l'adresse de notre payload dans la stack est : `0xbfffe695`
+En fait ça marche pas, car il n'utilise que 11 octets, et non 12, donc on peut pas injecter le premier argument.
 
 Essayons de reprendre le shell code de l'exercice précédent :
 ```py
