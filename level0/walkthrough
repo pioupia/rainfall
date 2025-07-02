@@ -1,0 +1,45 @@
+Première étape, ouvrir le binaire dans GDB, puis, désassembler la fonction `main`.
+
+On peut voir au niveau des instructions les lignes suivantes :
+```
+0x08048ec6 <+6>:	sub    esp,0x20
+0x08048ec9 <+9>:	mov    eax,DWORD PTR [ebp+0xc]
+0x08048ecc <+12>:	add    eax,0x4
+0x08048ecf <+15>:	mov    eax,DWORD PTR [eax]
+0x08048ed1 <+17>:	mov    DWORD PTR [esp],eax
+0x08048ed4 <+20>:	call   0x8049710 <atoi>
+0x08048ed9 <+25>:	cmp    eax,0x1a7
+0x08048ede <+30>:	jne    0x8048f58 <main+152>
+[...]
+0x08048f3d <+125>:	call   0x8054690 <setresuid>
+0x08048f42 <+130>:	lea    eax,[esp+0x10]
+0x08048f46 <+134>:	mov    DWORD PTR [esp+0x4],eax
+0x08048f4a <+138>:	mov    DWORD PTR [esp],0x80c5348
+0x08048f51 <+145>:	call   0x8054640 <execv>
+```
+
+Premièrement, on laisse 32 octets dans notre stack avec:
+`0x08048ec6 <+6>:	sub    esp,0x20`
+
+Ensuite, on définit `eax` a `[ebp+0xc]`. En gros, ça correspond à `argv[0]`. Il faut comprendre
+que `ebp` est censé être égal à `argc`, mais que en l'état, ce n'est pas le cas pour des raison d'alignements. Donc, on a 8 octets à passer avant d'avoir accès à `argc`.
+Le `eax + 4` permet de se déplacer sur `argv`, et donc d'aller à `argv + 1`
+
+Ensuite, on déstack `eax`, pour redéfinir `eax`. Donc on se met au niveau du pointeur de la première chaine de caractère du `argv`.
+
+On appel par la suite `atoi(argv[1])` que l'on compare à 423.
+
+Si les deux valeurs sont égales, on fait un `execv("/bin/sh", "/bin/sh")`,
+ce qui nous laisse accès au `bash` pour récupérer le flag dans `.pass`.
+
+```sh
+level0@RainFall:~$ ./level0 423
+$ cat ../level1/.pass
+cat: ../level1/.pass: Permission denied
+$ id
+uid=2030(level1) gid=2020(level0) groups=2030(level1),100(users),2020(level0)
+$ cd ../level1/	
+$ cat .pass
+1fe8a524fa4bec01ca4ea2a869af2a02260d4a7d5fe7e7c24d8617e6dca12d3a
+$ 
+```

@@ -1,0 +1,24 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+
+int	main(int argc, char **argv)
+{
+	char		*program;
+	gid_t		user_id;
+	gid_t		group_id;
+
+	if (atoi(argv[1]) != 423)
+		fwrite("No !\n", 1, 5, stderr);
+	else
+	{
+		program = strdup("/bin/sh");
+		group_id = getegid();
+		user_id = geteuid();
+		setresgid(group_id, group_id, group_id);
+		setresuid(user_id, user_id, user_id);
+		execv("/bin/sh", program);
+	}
+	return (0);
+}
